@@ -1,0 +1,29 @@
+{
+  "candidate_models": [
+    "EXP_DECAY",
+    "HYPERBOLIC_DECAY",
+    "STRETCHED_EXP",
+    "BI_EXP"
+  ],
+  "development_only": true,
+  "measurement_sigma": 0.08,
+  "nominal_k": 0.61,
+  "public_material_version": "v5p4",
+  "public_variable_schema": {
+    "source": [
+      "source_state",
+      "source_time"
+    ],
+    "target": [
+      "target_state",
+      "target_time"
+    ]
+  },
+  "seed": 20261304,
+  "source_domain": "cross-disciplinary measurement study",
+  "source_record_count": 4,
+  "synthetic": true,
+  "target_domain": "chemical simulation",
+  "world_class": "cross_domain_validation",
+  "world_id": "CV004"
+}

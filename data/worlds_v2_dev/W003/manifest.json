@@ -1,0 +1,15 @@
+{
+  "candidate_models": [
+    "EXP_DECAY",
+    "HYPERBOLIC_DECAY",
+    "STRETCHED_EXP",
+    "BI_EXP"
+  ],
+  "measurement_sigma": 0.04,
+  "nominal_k": 0.5558,
+  "seed": 20264139,
+  "source_domain": "physics simulation",
+  "synthetic": true,
+  "target_domain": "chemical simulation",
+  "world_id": "W003"
+}

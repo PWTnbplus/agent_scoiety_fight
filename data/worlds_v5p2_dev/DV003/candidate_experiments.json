@@ -1,0 +1,54 @@
+{
+  "experiments": [
+    {
+      "experiment_id": "E01",
+      "measure_t": 0.35,
+      "unit_cost": 1.0,
+      "x0": 0.68
+    },
+    {
+      "experiment_id": "E02",
+      "measure_t": 0.75,
+      "unit_cost": 1.0,
+      "x0": 0.68
+    },
+    {
+      "experiment_id": "E03",
+      "measure_t": 1.4,
+      "unit_cost": 1.0,
+      "x0": 0.68
+    },
+    {
+      "experiment_id": "E04",
+      "measure_t": 2.1,
+      "unit_cost": 1.0,
+      "x0": 0.68
+    },
+    {
+      "experiment_id": "E05",
+      "measure_t": 0.35,
+      "unit_cost": 1.0,
+      "x0": 1.32
+    },
+    {
+      "experiment_id": "E06",
+      "measure_t": 0.75,
+      "unit_cost": 1.0,
+      "x0": 1.32
+    },
+    {
+      "experiment_id": "E07",
+      "measure_t": 1.4,
+      "unit_cost": 1.0,
+      "x0": 1.32
+    },
+    {
+      "experiment_id": "E08",
+      "measure_t": 2.1,
+      "unit_cost": 1.0,
+      "x0": 1.32
+    }
+  ],
+  "measurement": "normalized_state",
+  "world_id": "DV003"
+}

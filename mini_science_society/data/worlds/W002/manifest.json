@@ -1,0 +1,15 @@
+{
+  "candidate_models": [
+    "EXP_DECAY",
+    "HYPERBOLIC_DECAY",
+    "STRETCHED_EXP",
+    "BI_EXP"
+  ],
+  "measurement_sigma": 0.04,
+  "nominal_k": 0.4209,
+  "seed": 20263131,
+  "source_domain": "mathematical time-series simulation",
+  "synthetic": true,
+  "target_domain": "biological quantity simulation",
+  "world_id": "W002"
+}

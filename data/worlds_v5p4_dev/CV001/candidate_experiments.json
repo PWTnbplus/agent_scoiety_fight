@@ -1,0 +1,54 @@
+{
+  "experiments": [
+    {
+      "experiment_id": "E01",
+      "measure_t": 0.5,
+      "unit_cost": 1.0,
+      "x0": 0.7
+    },
+    {
+      "experiment_id": "E02",
+      "measure_t": 1.1,
+      "unit_cost": 1.0,
+      "x0": 0.7
+    },
+    {
+      "experiment_id": "E03",
+      "measure_t": 1.8,
+      "unit_cost": 1.0,
+      "x0": 0.7
+    },
+    {
+      "experiment_id": "E04",
+      "measure_t": 2.6,
+      "unit_cost": 1.0,
+      "x0": 0.7
+    },
+    {
+      "experiment_id": "E05",
+      "measure_t": 0.5,
+      "unit_cost": 1.0,
+      "x0": 1.4
+    },
+    {
+      "experiment_id": "E06",
+      "measure_t": 1.1,
+      "unit_cost": 1.0,
+      "x0": 1.4
+    },
+    {
+      "experiment_id": "E07",
+      "measure_t": 1.8,
+      "unit_cost": 1.0,
+      "x0": 1.4
+    },
+    {
+      "experiment_id": "E08",
+      "measure_t": 2.6,
+      "unit_cost": 1.0,
+      "x0": 1.4
+    }
+  ],
+  "measurement": "normalized_state",
+  "world_id": "CV001"
+}

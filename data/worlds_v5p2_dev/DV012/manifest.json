@@ -1,0 +1,20 @@
+{
+  "candidate_models": [
+    "EXP_DECAY",
+    "HYPERBOLIC_DECAY",
+    "STRETCHED_EXP",
+    "BI_EXP"
+  ],
+  "development_only": true,
+  "family_group": "parameter_noise_variant",
+  "independent_theory_family": false,
+  "measurement_sigma": 0.03,
+  "nominal_k": 0.677,
+  "seed": 20261212,
+  "source_domain": "cyclic control",
+  "source_label": "matched_irrelevant_public_note",
+  "synthetic": true,
+  "target_domain": "ecological population",
+  "variant_index": 12,
+  "world_id": "DV012"
+}

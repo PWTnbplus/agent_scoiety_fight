@@ -1,0 +1,30 @@
+{
+  "candidate_models": [
+    "EXP_DECAY",
+    "HYPERBOLIC_DECAY",
+    "STRETCHED_EXP",
+    "BI_EXP"
+  ],
+  "protocol_version": "v5p11_offline_control",
+  "public_variable_schema": {
+    "source": [
+      "source_state",
+      "source_time"
+    ],
+    "target": [
+      "target_state",
+      "target_time"
+    ]
+  },
+  "source_domain": "offline control",
+  "source_public_k": 0.5,
+  "source_public_sigma": 0.2,
+  "source_public_x0": 1.0,
+  "synthetic": true,
+  "target_domain": "offline control",
+  "target_public_k": 0.5,
+  "target_public_sigma": 0.2,
+  "target_public_x0": 1.0,
+  "time_unit": "seconds",
+  "world_id": "IV005_AMBIGUOUS"
+}

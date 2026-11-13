@@ -1,0 +1,20 @@
+{
+  "candidate_models": [
+    "EXP_DECAY",
+    "HYPERBOLIC_DECAY",
+    "STRETCHED_EXP",
+    "BI_EXP"
+  ],
+  "development_only": true,
+  "family_group": "parameter_noise_variant",
+  "independent_theory_family": false,
+  "measurement_sigma": 0.04,
+  "nominal_k": 0.367,
+  "seed": 20261202,
+  "source_domain": "physics simulation",
+  "source_label": "related_domain_analogy",
+  "synthetic": true,
+  "target_domain": "ecological population",
+  "variant_index": 2,
+  "world_id": "DV002"
+}
