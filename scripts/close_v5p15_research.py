@@ -319,7 +319,7 @@ def write_reports(rows: list[dict[str, str]], pairs: list[dict[str, Any]], accou
     status = [
         "# Final project status",
         "",
-        "- Engineering: COMPLETE for the V5-P15 offline design, eight-world validation, authorization binding, budget separation, route audit, and evidence packaging; 184 pre-run tests passed.",
+        "- Engineering: COMPLETE for the V5-P15 offline design, eight-world validation, authorization binding, budget separation, route audit, and evidence packaging; 186 tests passed.",
         f"- Real execution: PARTIAL_STOPPED; {accounting['completed_api_calls']} completed responses and {accounting['failed_api_calls']} failed transport attempt among {accounting['attempted_unique_api_calls']} unique attempts.",
         "- Scientific validation: INCONCLUSIVE; action and route diagnostics are available for the executed subset, while the eight-world confirmation claim remains untested.",
         "- Core cohort: 8 worlds × 5 repeats × A/B/C/D was frozen as 200 requests and was not fully completed after the TLS stop.",
