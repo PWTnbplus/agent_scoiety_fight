@@ -44,6 +44,10 @@ def read_jsonl(path: Path) -> list[dict[str, Any]]:
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
 
 
+def normalized_request_id(value: Any) -> str:
+    return str(value or "").rsplit(":attempt", 1)[0]
+
+
 def write_json(path: Path, value: object) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(value, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
@@ -105,9 +109,16 @@ def copy_rows() -> list[dict[str, str]]:
 
 def combine_ledgers() -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
+    session_maps = {
+        "validation": {normalized_request_id(row.get("request_id")): row for row in read_json(VALIDATION_SESSION / "gate_state.json").get("attempts", [])},
+        "formal_core_partial": {normalized_request_id(row.get("request_id")): row for row in read_json(CORE_SESSION / "gate_state.json").get("attempts", [])},
+    }
     for cohort, path in (("validation", VALIDATION_RUN / "call_ledger.jsonl"), ("formal_core_partial", CORE_RUN / "call_ledger.jsonl")):
         for row in read_jsonl(path):
             row["cohort"] = cohort
+            gate_row = session_maps[cohort].get(normalized_request_id(row.get("request_id")), {})
+            row["session_reserved_estimated_cost_usd"] = gate_row.get("estimated_cost_usd")
+            row["session_attempt_status"] = gate_row.get("status", "")
             rows.append(row)
     return rows
 
@@ -156,13 +167,13 @@ def paired(rows: list[dict[str, str]]) -> list[dict[str, Any]]:
 
 
 def write_cost_ledger(ledger_rows: list[dict[str, Any]]) -> dict[str, Any]:
-    fields = ["cohort", "call_id", "request_id", "world_id", "replicate", "condition", "stage", "request_status", "failure_kind", "detail_code", "usage_source", "billing_source", "actual_input_tokens", "actual_output_tokens", "reserved_estimated_cost_usd", "estimated_cost_usd", "local_response_estimate_usd", "provider_billed_cost_usd", "unique_billable_call"]
+    fields = ["cohort", "call_id", "request_id", "world_id", "replicate", "condition", "stage", "request_status", "session_attempt_status", "failure_kind", "detail_code", "usage_source", "billing_source", "actual_input_tokens", "actual_output_tokens", "session_reserved_estimated_cost_usd", "reserved_estimated_cost_usd", "estimated_cost_usd", "local_response_estimate_usd", "provider_billed_cost_usd", "unique_billable_call"]
     write_csv(REPORT / "API_COST_LEDGER.csv", ledger_rows, fields)
     completed = [row for row in ledger_rows if str(row.get("request_status", "")).lower() == "completed"]
     failed = [row for row in ledger_rows if str(row.get("request_status", "")).lower() != "completed"]
-    reserved = sum(as_float(row.get("reserved_estimated_cost_usd")) or 0.0 for row in ledger_rows)
+    reserved = sum(as_float(row.get("session_reserved_estimated_cost_usd")) or 0.0 for row in ledger_rows)
     local_completed = sum(as_float(row.get("local_response_estimate_usd")) or 0.0 for row in completed)
-    failed_reserved = sum(as_float(row.get("reserved_estimated_cost_usd")) or 0.0 for row in failed)
+    failed_reserved = sum(as_float(row.get("session_reserved_estimated_cost_usd")) or 0.0 for row in failed)
     accounting = {
         "budget_cap_usd": 10.0,
         "attempted_unique_api_calls": len(ledger_rows),
