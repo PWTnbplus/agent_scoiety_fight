@@ -1,0 +1,37 @@
+{
+  "candidate_models": [
+    "EXP_DECAY",
+    "HYPERBOLIC_DECAY",
+    "STRETCHED_EXP",
+    "BI_EXP"
+  ],
+  "measurement_sigma": 0.025,
+  "protocol_version": "v5p15_identifiable_world_v1",
+  "public_unit_mapping": {
+    "source_state": "normalized_state",
+    "source_time": "seconds",
+    "source_x0": "same normalized state scale as target"
+  },
+  "public_variable_schema": {
+    "source": [
+      "source_state",
+      "source_time"
+    ],
+    "target": [
+      "target_state",
+      "target_time"
+    ]
+  },
+  "seed": 20262215,
+  "source_domain": "cellular relaxation",
+  "source_public_k": 0.60577,
+  "source_public_sigma": 0.025,
+  "source_public_x0": 1.054,
+  "synthetic": true,
+  "target_domain": "reaction kinetics",
+  "target_public_k": 0.60577,
+  "target_public_sigma": 0.025,
+  "target_public_x0": 1.0,
+  "time_unit": "seconds",
+  "world_id": "RS001"
+}

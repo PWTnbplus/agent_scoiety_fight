@@ -9,7 +9,16 @@ from typing import Any
 
 from .budget import estimate_tokens
 from .config import ExperimentConfig
-from .prompts import seq2_stage1_messages, seq2_stage2_messages, single_messages
+from .prompts import (
+    collab_source_messages,
+    collab_synthesis_messages,
+    collab_target_messages,
+    compete_judge_messages,
+    compete_proposer_messages,
+    seq2_stage1_messages,
+    seq2_stage2_messages,
+    single_messages,
+)
 from .public_loader import load_world
 from .schema import sha256_json
 
@@ -126,7 +135,7 @@ def pilot_request_plan(
     seq2_output_tokens = V5P4_SEQ2_OUTPUT_TOKENS if str(config.score_version).startswith(("v5p4", "v5p8", "v5p11")) else (V4_SEQ2_OUTPUT_TOKENS if str(config.score_version).startswith("v4") else SEQ2_OUTPUT_TOKENS)
     stage1_artifact_cap = V5P4_SEQ2_OUTPUT_TOKENS if str(config.score_version).startswith(("v5p4", "v5p8", "v5p11")) else (V4_SEQ2_OUTPUT_TOKENS if str(config.score_version).startswith("v4") else STAGE1_ARTIFACT_TOKEN_CAP)
     records: list[dict[str, Any]] = []
-    supported = {"A_TARGET_ONLY", "B_SINGLE_RELATED", "C_SEQ2_TRANSFER", "D_SEQ2_BLOCK", "E_SEQ2_IRRELEVANT_TRANSFER", "F_SEQ2_MISALIGNED_TRANSFER"}
+    supported = {"A_TARGET_ONLY", "B_SINGLE_RELATED", "C_SEQ2_TRANSFER", "D_SEQ2_BLOCK", "E_SEQ2_IRRELEVANT_TRANSFER", "F_SEQ2_MISALIGNED_TRANSFER", "S_COLLAB3", "S_COMPETE3"}
     unknown = sorted(set(conditions) - supported)
     if unknown:
         raise ValueError(f"real pilot preflight does not support conditions: {', '.join(unknown)}")
@@ -141,6 +150,22 @@ def pilot_request_plan(
                 if condition in {"A_TARGET_ONLY", "B_SINGLE_RELATED"}:
                     view = _condition_view(root, world_id, condition, config)
                     records.append(_record(request_id=f"{pair_id}:{condition}:stage2:single_question_designer:attempt1", stage="stage2", agent_name="single_question_designer", world_id=world_id, condition=condition, messages=single_messages(view, condition, protocol_version=protocol_version), max_output_tokens=SINGLE_OUTPUT_TOKENS, input_rate=input_rate, output_rate=output_rate))
+                elif condition in {"S_COLLAB3", "S_COMPETE3"}:
+                    view = _condition_view(root, world_id, condition, config)
+                    if condition == "S_COLLAB3":
+                        society_calls = (
+                            ("source_analyst", collab_source_messages(view)),
+                            ("target_analyst", collab_target_messages(view)),
+                            ("synthesis_designer", collab_synthesis_messages(view, {}, {})),
+                        )
+                    else:
+                        society_calls = (
+                            ("proposer_1", compete_proposer_messages(view, "P1")),
+                            ("proposer_2", compete_proposer_messages(view, "P2")),
+                            ("evidence_judge", compete_judge_messages(view, {}, {})),
+                        )
+                    for agent_name, messages in society_calls:
+                        records.append(_record(request_id=f"{pair_id}:{condition}:stage2:{agent_name}:attempt1", stage="stage2", agent_name=agent_name, world_id=world_id, condition=condition, messages=messages, max_output_tokens=300, input_token_upper_bound=_input_tokens(messages) + 1200 if agent_name in {"synthesis_designer", "evidence_judge"} else None, input_rate=input_rate, output_rate=output_rate))
             seq2 = [condition for condition in conditions if condition in {"C_SEQ2_TRANSFER", "D_SEQ2_BLOCK", "E_SEQ2_IRRELEVANT_TRANSFER", "F_SEQ2_MISALIGNED_TRANSFER"}]
             if seq2:
                 owner = "C_SEQ2_TRANSFER" if "C_SEQ2_TRANSFER" in seq2 else seq2[0]

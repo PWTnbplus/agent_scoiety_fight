@@ -545,15 +545,22 @@ def proposed_v5p11_authorization(
     if str(config.score_version) != "v5p11":
         raise ValueError("V5-P11 proposal requires score_version=v5p11")
     remainder_worlds = ["IV002", "IV003", "IV004"]
+    is_research = str(request_namespace or "").startswith("V5P15")
     is_remainder = worlds == remainder_worlds and conditions == allowed_conditions
     is_recovery = str(request_namespace or "").startswith("V5P12REC") and conditions == allowed_conditions and set(worlds).issubset(set(allowed_worlds))
     is_v5p13 = str(request_namespace or "").startswith("V5P13") and worlds == ["IV002"] and conditions == allowed_conditions
-    if worlds != allowed_worlds and not is_remainder and not is_recovery and not is_v5p13:
+    if is_research:
+        configured_worlds = set(getattr(config, "allowed_worlds", None) or [])
+        configured_conditions = set(getattr(config, "allowed_conditions", None) or getattr(config, "conditions", None) or [])
+        if not worlds or not set(worlds).issubset(configured_worlds) or not conditions or not set(conditions).issubset(configured_conditions):
+            raise ValueError("V5-P15 proposal exceeds the frozen research config scope")
+    elif worlds != allowed_worlds and not is_remainder and not is_recovery and not is_v5p13:
         raise ValueError("V5-P11 proposal must cover all IV worlds or an explicit V5-P12 remainder/recovery or V5-P13 follow-up scope")
     proposal_repeats = int(getattr(config, "repeats", 2) if repeats is None else repeats)
-    expected_calls = 30 if is_remainder else (len(request_plan) if (is_recovery or is_v5p13) else 40)
-    allowed_cap = 0.15 if is_v5p13 else (0.25 if (is_remainder or is_recovery) else 0.40)
-    if (proposal_repeats != 4 if is_v5p13 else proposal_repeats != 2) or max_unique_provider_attempts != expected_calls or max_estimated_cost_usd <= 0 or max_estimated_cost_usd > allowed_cap:
+    expected_calls = len(request_plan) if (is_research or is_recovery or is_v5p13) else (30 if is_remainder else 40)
+    allowed_cap = 10.0 if is_research else (0.15 if is_v5p13 else (0.25 if (is_remainder or is_recovery) else 0.40))
+    repeats_valid = proposal_repeats == int(getattr(config, "repeats", proposal_repeats)) if is_research else (proposal_repeats == 4 if is_v5p13 else proposal_repeats == 2)
+    if not repeats_valid or max_unique_provider_attempts != expected_calls or max_estimated_cost_usd <= 0 or max_estimated_cost_usd > allowed_cap:
         raise ValueError("V5-P11 proposal has an invalid call/cost cap for its frozen scope")
     if request_namespace is None or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9_-]{7,100}", str(request_namespace)):
         raise ValueError("V5-P11 request namespace is required and invalid")
@@ -568,9 +575,9 @@ def proposed_v5p11_authorization(
     for item in request_plan:
         pairs.setdefault((str(item.get("world_id")), int(item.get("replicate"))), []).append(item)
     expected_pairs = {(world, replicate) for world in worlds for replicate in (0, 1)}
-    if is_recovery or is_v5p13:
+    if is_research or is_recovery or is_v5p13:
         expected_pairs = set(pairs)
-    if set(pairs) != expected_pairs or any(len(items) != 5 for items in pairs.values()):
+    if set(pairs) != expected_pairs or any(len(items) < 1 for items in pairs.values()):
         raise ValueError("V5-P11 request plan must have five requests per authorized world/repeat pair")
     plan_hash = sha256_json(request_plan)
     estimated_cost = float(sum(float(item.get("estimated_cost_usd", 0.0)) for item in request_plan))
@@ -615,6 +622,10 @@ def proposed_v5p11_authorization(
     elif is_v5p13:
         record["protocol_variant"] = "v5p13_iv002_followup"
         record["followup_cohort"] = "additional_followup_cohort_R2_R3"
+    elif is_research:
+        record["protocol_variant"] = "v5p15_research"
+        record["research_protocol"] = "eight_worlds_balanced_positive_negative_v1"
+        record["research_scope_is_additive"] = True
     return record
 
 

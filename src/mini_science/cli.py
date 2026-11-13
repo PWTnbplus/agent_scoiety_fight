@@ -247,7 +247,9 @@ def main(argv: list[str] | None = None) -> int:
                 proposal_hint = json.loads(Path(args.proposal_file).read_text(encoding="utf-8"))
                 is_remainder = proposal_hint.get("protocol_variant") == "v5p12_remainder"
                 is_v5p13 = proposal_hint.get("protocol_variant") == "v5p13_iv002_followup"
-                expected_worlds = ["IV002"] if is_v5p13 else (["IV002", "IV003", "IV004"] if is_remainder else ["IV001", "IV002", "IV003", "IV004"])
+                is_v5p15 = proposal_hint.get("protocol_variant") == "v5p15_research"
+                expected_worlds = list(proposal_hint.get("worlds", [])) if is_v5p15 else (["IV002"] if is_v5p13 else (["IV002", "IV003", "IV004"] if is_remainder else ["IV001", "IV002", "IV003", "IV004"]))
+                expected_conditions = list(proposal_hint.get("conditions", [])) if is_v5p15 else expected_conditions
                 if worlds != expected_worlds or conditions != expected_conditions:
                     raise ValueError("V5-P11 authorization scope does not match the bound proposal")
                 proposal_repeats = int(args.repeats if args.repeats is not None else proposal_hint.get("repeats", config.repeats))
